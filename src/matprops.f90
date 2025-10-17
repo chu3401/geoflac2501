@@ -114,6 +114,11 @@ Eff_visc = 0.d0
 r=8.31448d0
 tmpr = 0.25d0*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 
+s11 = 0.25d0 * (stress0(j,i,1,1)+stress0(j,i,1,2)+stress0(j,i,1,3)+stress0(j,i,1,4))
+s22 = 0.25d0 * (stress0(j,i,2,1)+stress0(j,i,2,2)+stress0(j,i,2,3)+stress0(j,i,2,4))
+s33 = 0.25d0 * (stress0(j,i,4,1)+stress0(j,i,4,2)+stress0(j,i,4,3)+stress0(j,i,4,4))
+pres = -1*(s11+s22+s33)/3d0
+
 zcord = 0.25d0*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
 if (zcord < -660d3) then
     ! T-dep. viscosity
@@ -136,7 +141,7 @@ do k = 1, nphase
     pow1 = -1.d0/pln(k)
 
     vis = 0.25d0 * srat**pow*(0.75d0*acoef(k))**pow1* &
-          exp(eactiv(k)/(pln(k)*r*(tmpr+273.d0)))*1.d+6
+          exp((eactiv(k)+vactiv(k)*pres)/(pln(k)*r*(tmpr+273.d0)))*1.d+6
 
     if (vis .lt. v_min) vis = v_min
     if (vis .gt. v_max) vis = v_max
